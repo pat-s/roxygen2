@@ -166,8 +166,8 @@ test_that("description block preserves whitespace", {
     "
   )[[1]]
 
-  expect_equal(out$description, "Line 1\n  Line 2")
-  expect_equal(out$details, "Line 1\n  Line 2")
+  expect_equal(block_get_tag_value(out, "description"), "Line 1\n  Line 2")
+  expect_equal(block_get_tag_value(out, "details"), "Line 1\n  Line 2")
 })
 
 
@@ -190,7 +190,7 @@ test_that("errors are propagated", {
       #' @eval foo()
       NULL"
     ),
-    "@eval failed with error"
+    "failed with error"
   )
 })
 
@@ -201,7 +201,7 @@ test_that("must return non-NA string", {
       #' @eval foo()
       NULL"
     ),
-    "@eval did not evaluate to a string"
+    "did not evaluate to a string"
   )
 
   expect_warning(
@@ -210,10 +210,9 @@ test_that("must return non-NA string", {
       #' @eval foo()
       NULL"
     ),
-    "@eval result contained NA"
+    "result contained NA"
   )
 })
-
 
 test_that("also works with namespace roclet", {
   out <- roc_proc_text(namespace_roclet(), "

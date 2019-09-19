@@ -163,6 +163,15 @@ block_get_tag <- function(block, tag) {
     block[[matches[[1]]]]
   }
 }
+block_get_tag_value <- function(block, tag) {
+  matches <- which(block_tags(block) %in% tag)
+  n <- length(matches)
+  if (n == 1) {
+    block[[matches]]$val
+  } else {
+    NULL
+  }
+}
 
 block_replace_tags <- function(block, tags, values) {
   indx <- which(block_tags(block) %in% tags)
