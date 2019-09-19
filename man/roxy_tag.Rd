@@ -15,7 +15,7 @@
 \alias{tag_examples}
 \alias{tag_markdown}
 \alias{tag_markdown_with_sections}
-\title{Parsing tags.}
+\title{Tags}
 \usage{
 roxy_tag(tag, val, file = "", line = 0)
 

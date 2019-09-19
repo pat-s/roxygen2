@@ -1,5 +1,11 @@
 # roxygen2 (development version)
 
+* The internal data structure used to represent blocks has been overhauled.
+  It is now documented and stable - see `roxy_block()` for details. If you're
+  one of the few people who have written a roxygen2 extension, this will
+  break your code - but the documentation, object structure, and print methods 
+  are now much better that I hope it's not too annoying!
+
 * You now get a warning if you use multiple `@usage` statements. Previously,
   the first was used without a warning
 

@@ -1,3 +1,24 @@
+#' Blocks
+#'
+#' @description
+#' A `roxy_block` represents a single roxygen2 block.
+#'
+#' The `block_*` functions provide a few helpers for common operations:
+#' * `block_has_tag(blocks, tags)`: does `block` contain any of these `tags`?
+#' * `block_get_tags(block, tags)`: get all instances of `tags`
+#' * `block_get_tag(block, tag)`: get single tag. Returns `NULL` if 0,
+#'    throws warning if more than 1.
+#' * `block_get_tag_value(block, tag)`: gets `val` field from single tag.
+#'
+#' @param tags A list of [roxy_tag]s.
+#' @param file,line Location of first line of block
+#' @param call Expression associated with block.
+#' @param object Optionally, the object associated with the block, found
+#'   by inspecting/evaluating `call`.
+#' @param block A `roxy_block` to manipulate.
+#' @param tag,tags Either a single tag name, or a character vector of tag names.
+#' @export
+#' @keywords internal
 roxy_block <- function(tags,
                        file,
                        line,
@@ -140,13 +161,20 @@ block_tags <- function(block) {
   map_chr(block$tags, "tag")
 }
 
-block_has_tags <- function(block, tag) {
-  any(block_tags(block) %in% tag)
+#' @export
+#' @rdname roxy_block
+block_has_tags <- function(block, tags) {
+  any(block_tags(block) %in% tags)
 }
 
+#' @export
+#' @rdname roxy_block
 block_get_tags <- function(block, tags) {
   block$tags[block_tags(block) %in% tags]
 }
+
+#' @export
+#' @rdname roxy_block
 block_get_tag <- function(block, tag) {
   matches <- which(block_tags(block) %in% tag)
   n <- length(matches)
@@ -159,6 +187,9 @@ block_get_tag <- function(block, tag) {
     block$tags[[matches[[1]]]]
   }
 }
+
+#' @export
+#' @rdname roxy_block
 block_get_tag_value <- function(block, tag) {
   block_get_tag(block, tag)$val
 }

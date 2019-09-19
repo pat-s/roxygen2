@@ -1,4 +1,4 @@
-#' Parsing tags.
+#' Tags
 #'
 #' `roxy_tag` constructs a tag object, and `roxy_tag_warning` makes
 #' an informative warning using the location information stored in the tag.
