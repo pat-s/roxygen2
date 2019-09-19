@@ -56,11 +56,10 @@ roclet_preprocess.roclet_namespace <- function(x,
                                                base_path,
                                                global_options = list()) {
 
-  lines <- unlist(lapply(blocks, block_to_ns, tag_set = ns_tags_import)) %||% character()
-  lines <- sort_c(unique(lines))
-
+  lines <- blocks_to_ns(blocks, env, tag_set = ns_tags_import)
   NAMESPACE <- file.path(base_path, "NAMESPACE")
-  if (purrr::is_empty(lines) && !made_by_roxygen(NAMESPACE)) {
+
+  if (length(lines) == 0 && !made_by_roxygen(NAMESPACE)) {
     return(x)
   }
 
@@ -70,17 +69,13 @@ roclet_preprocess.roclet_namespace <- function(x,
   invisible(x)
 }
 
-
 #' @export
 roclet_process.roclet_namespace <- function(x,
                                             blocks,
                                             env,
                                             base_path,
                                             global_options = list()) {
-
-  ns <- unlist(lapply(blocks, block_to_ns, env = env)) %||%
-    character()
-  sort_c(unique(ns))
+  blocks_to_ns(blocks, env)
 }
 
 #' @export
@@ -99,22 +94,6 @@ roclet_tags.roclet_namespace <- function(x) {
     rawNamespace = tag_code,
     useDynLib = tag_words(1)
   )
-}
-
-block_to_ns <- function(block, env, tag_set = ns_tags) {
-  tags <- intersect(names(block), tag_set)
-  lapply(tags, ns_process_tag, block = block, env = env)
-}
-
-ns_process_tag <- function(tag_name, block, env) {
-  f <- if (tag_name == "evalNamespace") {
-    function(tag, block) ns_evalNamespace(tag, block, env)
-  } else {
-    get(paste0("ns_", tag_name), mode = "function")
-  }
-  tags <- block[names(block) == tag_name]
-
-  lapply(tags, f, block = block)
 }
 
 #' @export
@@ -137,8 +116,24 @@ roclet_clean.roclet_namespace <- function(x, base_path) {
   }
 }
 
-# Functions that take complete block and return NAMESPACE lines
-ns_export <- function(tag, block) {
+# NAMESPACE generation ----------------------------------------------------
+
+blocks_to_ns <- function(blocks, env, tag_set = ns_tags) {
+  lines <- map(blocks, block_to_ns, env = env, tag_set = tag_set)
+  lines <- unlist(lines) %||% character()
+
+  sort_c(unique(lines))
+}
+
+block_to_ns <- function(block, env, tag_set = ns_tags) {
+  tags <- block_get_tags(block, tag_set)
+
+  map(tags, function(tag) {
+    exec(paste0("ns_", tag$tag), tag$val, block, env)
+  })
+}
+
+ns_export <- function(tag, block, env) {
   if (identical(tag, "")) {
     # FIXME: check for empty exports (i.e. no name)
     default_export(attr(block, "object"), block)
@@ -146,31 +141,16 @@ ns_export <- function(tag, block) {
     export(tag)
   }
 }
-default_export <- function(x, block) UseMethod("default_export")
-#' @export
-default_export.s4class   <- function(x, block) export_class(x$value@className)
-#' @export
-default_export.s4generic <- function(x, block) export(x$value@generic)
-#' @export
-default_export.s4method  <- function(x, block) export_s4_method(x$value@generic)
-#' @export
-default_export.s3method  <- function(x, block) export_s3_method(attr(x$value, "s3method"))
-#' @export
-default_export.rcclass   <- function(x, block) export_class(x$value@className)
-#' @export
-default_export.default   <- function(x, block) export(x$alias)
-#' @export
-default_export.NULL      <- function(x, block) export(block$name)
 
-ns_exportClass       <- function(tag, block) export_class(tag)
-ns_exportMethod      <- function(tag, block) export_s4_method(tag)
-ns_exportPattern     <- function(tag, block) one_per_line("exportPattern", tag)
-ns_import            <- function(tag, block) one_per_line("import", tag)
-ns_importFrom        <- function(tag, block) repeat_first("importFrom", tag)
-ns_importClassesFrom <- function(tag, block) repeat_first("importClassesFrom", tag)
-ns_importMethodsFrom <- function(tag, block) repeat_first("importMethodsFrom", tag)
+ns_exportClass       <- function(tag, block, env) export_class(tag)
+ns_exportMethod      <- function(tag, block, env) export_s4_method(tag)
+ns_exportPattern     <- function(tag, block, env) one_per_line("exportPattern", tag)
+ns_import            <- function(tag, block, env) one_per_line("import", tag)
+ns_importFrom        <- function(tag, block, env) repeat_first("importFrom", tag)
+ns_importClassesFrom <- function(tag, block, env) repeat_first("importClassesFrom", tag)
+ns_importMethodsFrom <- function(tag, block, env) repeat_first("importMethodsFrom", tag)
 
-ns_exportS3Method    <- function(tag, block) {
+ns_exportS3Method    <- function(tag, block, env) {
   obj <- attr(block, "object")
 
   if (length(tag) < 2 && !inherits(obj, "s3method")) {
@@ -191,8 +171,7 @@ ns_exportS3Method    <- function(tag, block) {
   export_s3_method(method)
 }
 
-
-ns_useDynLib         <- function(tag, block) {
+ns_useDynLib         <- function(tag, block, env) {
   if (length(tag) == 1) {
     return(paste0("useDynLib(", auto_quote(tag), ")"))
   }
@@ -206,9 +185,9 @@ ns_useDynLib         <- function(tag, block) {
     repeat_first("useDynLib", tag)
   }
 }
-ns_rawNamespace  <- function(tag, block) tag
+ns_rawNamespace  <- function(tag, block, env) tag
 ns_evalNamespace <- function(tag, block, env) {
-  block_eval(tag, block, env, "@evalNamespace")
+  roxy_tag_eval(tag, env)
 }
 
 # Functions used by both default_export and ns_* functions
@@ -219,6 +198,25 @@ export_s3_method <- function(x) {
   args <- paste0(auto_backtick(x), collapse = ",")
   paste0("S3method(", args, ")")
 }
+
+# Default export methods --------------------------------------------------
+
+default_export <- function(x, block) UseMethod("default_export")
+#' @export
+default_export.s4class   <- function(x, block) export_class(x$value@className)
+#' @export
+default_export.s4generic <- function(x, block) export(x$value@generic)
+#' @export
+default_export.s4method  <- function(x, block) export_s4_method(x$value@generic)
+#' @export
+default_export.s3method  <- function(x, block) export_s3_method(attr(x$value, "s3method"))
+#' @export
+default_export.rcclass   <- function(x, block) export_class(x$value@className)
+#' @export
+default_export.default   <- function(x, block) export(x$alias)
+#' @export
+default_export.NULL      <- function(x, block) export(block$name)
+
 
 # Helpers -----------------------------------------------------------------
 

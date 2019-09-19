@@ -53,6 +53,26 @@ roxy_tag_warning <- function(x, ...) {
   NULL
 }
 
+roxy_tag_eval <- function(tag, env) {
+  tryCatch({
+    expr <- parse(text = tag$val)
+    out <- eval(expr, envir = env)
+
+    if (!is.character(out)) {
+      roxy_tag_warning(tag, " did not evaluate to a string")
+    } else if (anyNA(out)) {
+      roxy_tag_warning(tag, " result contained NA")
+    } else {
+      out
+    }
+  }, error = function(e) {
+    roxy_tag_warning(tag, " failed with error:\n", e$message)
+  })
+}
+
+# Tag parserss ------------------------------------------------------------
+
+
 
 #' @export
 #' @rdname roxy_tag

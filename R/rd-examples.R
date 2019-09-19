@@ -1,11 +1,11 @@
 topic_add_examples <- function(topic, block, base_path) {
-  examples <- block_tags(block, c("examples", "example"))
+  tags <- block_get_tags(block, c("examples", "example"))
 
-  for (i in seq_along(examples)) {
-    if (names(examples)[[i]] == "examples") {
-      example <- examples[[i]]
+  for (tag in tags) {
+    if (tag$tag == "examples") {
+      example <- tag$val
     } else {
-      example <- read_example_from_path(str_trim(examples[[i]]), base_path, block = block)
+      example <- read_example_from_path(str_trim(tag$val), base_path, block = block)
     }
     topic$add_simple_field("examples", example)
   }

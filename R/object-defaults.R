@@ -8,9 +8,9 @@ object_defaults.data <- function(x) {
   str_out <- rd(object_format(x$value))
 
   list(
-    docType = "data",
-    format = str_out,
-    keywords = "datasets"
+    roxy_tag("docType", "data"),
+    roxy_tag("format", str_out),
+    roxy_tag("keywords", "datasets")
   )
 }
 
@@ -26,34 +26,34 @@ object_defaults.package <- function(x) {
   }
 
   list(
-    docType = "package",
-    name = package_suffix(desc$Package),
+    roxy_tag("docType", "package"),
+    roxy_tag("name", package_suffix(desc$Package)),
     # "NULL" prevents addition of default aliases, see also #202
-    aliases = paste("NULL", desc$Package, package_suffix(desc$Package)),
-    title = paste0(desc$Package, ": ", desc$Title),
-    description = description,
-    seealso = package_seealso(desc),
-    author = package_authors(desc)
+    roxy_tag("aliases", paste("NULL", desc$Package, package_suffix(desc$Package))),
+    roxy_tag("title", paste0(desc$Package, ": ", desc$Title)),
+    roxy_tag("description", description),
+    roxy_tag("seealso", package_seealso(desc)),
+    roxy_tag("author", package_authors(desc))
   )
 }
 
 #' @export
 object_defaults.s4class <- function(x) {
   list(
-    docType = "class"
+    roxy_tag("docType", "class")
   )
 }
 
 #' @export
 object_defaults.rcclass <- function(x) {
   list(
-    docType = "class"
+    roxy_tag("docType", "class")
   )
 }
 
 #' @export
 object_defaults.s4method <- function(x) {
   list(
-    docType = "methods"
+    roxy_tag("docType", "class")
   )
 }

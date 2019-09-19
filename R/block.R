@@ -42,7 +42,6 @@ print.roxy_block <- function(x, ...) {
   cat_line("  Obj ? ", !is.null(attr(x, "object")))
 }
 
-# Creates roxy_block from list of raw tags ,
 block_create <- function(tokens, call, srcref,
                          registry = list(),
                          global_options = list()) {
@@ -75,17 +74,13 @@ block_evaluate <- function(block, env,
                            global_options = list()
                            ) {
 
-  is_eval <- names(block) == "eval"
-  eval <- block[is_eval]
-  if (length(eval) == 0)
+  eval <- block_get_tags(block, "eval")
+  if (length(eval) == 0) {
     return(block)
+  }
 
   # Evaluate
-  results <- lapply(eval, block_eval,
-    block = block,
-    env = env,
-    tag_name = "@eval"
-  )
+  results <- lapply(eval, roxy_tag_eval, env = env)
   results <- lapply(results, function(x) {
     if (is.null(x)) {
       character()
@@ -105,11 +100,7 @@ block_evaluate <- function(block, env,
   )
 
   # Interpolate results back into original locations
-  out <- lapply(block, list)
-  out[is_eval] <- tags
-  names(out)[is_eval] <- ""
-
-  roxy_block_copy(block, compact(unlist(out, recursive = FALSE)))
+  block_replace_tags(block, "eval", tags)
 }
 
 block_find_object <- function(block, env) {
@@ -125,15 +116,9 @@ block_find_object <- function(block, env) {
 
   # Add in defaults generated from the object
   defaults <- object_defaults(object)
+  defaults <- defaults[!block_tags(defaults) %in% block_tags(block)]
 
-  for (tag in names(defaults)) {
-    if (tag %in% names(block))
-      next
-
-    block[[tag]] <- defaults[[tag]]
-  }
-
-  block
+  roxy_block_copy(block, c(block, defaults))
 }
 
 block_location <- function(block) {
@@ -153,15 +138,49 @@ block_warning <- function(block, ...) {
   NULL
 }
 
+# block accessors ---------------------------------------------------------
+
+block_tags <- function(block) {
+  map_chr(block, "tag")
+}
+
+block_has_tags <- function(block, tag) {
+  any(block_tags(block) %in% tag)
+}
+
+block_get_tags <- function(block, tags) {
+  block[block_tags(block) %in% tags]
+}
+block_get_tag <- function(block, tag) {
+  matches <- which(block_tags(block) %in% tag)
+  n <- length(matches)
+  if (n == 0) {
+    NULL
+  } else if (n == 1) {
+    block[[matches]]
+  } else {
+    roxy_tag_warning(block[[matches[[2]]]], "May only use one @", tag, " per block")
+    block[[matches[[1]]]]
+  }
+}
+
+block_replace_tags <- function(block, tags, values) {
+  indx <- which(block_tags(block) %in% tags)
+  stopifnot(length(indx) == length(values))
+
+  tags <- lapply(block, list)
+  tags[indx] <- values
+
+  roxy_block_copy(block, compact(unlist(tags, recursive = FALSE)))
+}
+
+# parsing -----------------------------------------------------------------
+
 parse_tags <- function(tokens, registry = list(), global_options = list()) {
   markdown_activate(tokens, global_options = global_options)
 
   tokens <- parse_description(tokens)
-  tags <- compact(lapply(tokens, parse_tag, registry = registry))
-
-  # Convert to existing named list format - this isn't ideal, but
-  # it's what roxygen already uses
-  set_names(map(tags, "val"), map_chr(tags, "tag"))
+  compact(lapply(tokens, parse_tag, registry = registry))
 }
 
 parse_tag <- function(x, registry) {
