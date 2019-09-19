@@ -129,63 +129,63 @@ block_to_ns <- function(block, env, tag_set = ns_tags) {
   tags <- block_get_tags(block, tag_set)
 
   map(tags, function(tag) {
-    exec(paste0("ns_", tag$tag), tag$val, block, env)
+    exec(paste0("ns_", tag$tag), tag, block, env)
   })
 }
 
 ns_export <- function(tag, block, env) {
-  if (identical(tag, "")) {
+  if (identical(tag$val, "")) {
     # FIXME: check for empty exports (i.e. no name)
     default_export(attr(block, "object"), block)
   } else {
-    export(tag)
+    export(tag$val)
   }
 }
 
-ns_exportClass       <- function(tag, block, env) export_class(tag)
-ns_exportMethod      <- function(tag, block, env) export_s4_method(tag)
-ns_exportPattern     <- function(tag, block, env) one_per_line("exportPattern", tag)
-ns_import            <- function(tag, block, env) one_per_line("import", tag)
-ns_importFrom        <- function(tag, block, env) repeat_first("importFrom", tag)
-ns_importClassesFrom <- function(tag, block, env) repeat_first("importClassesFrom", tag)
-ns_importMethodsFrom <- function(tag, block, env) repeat_first("importMethodsFrom", tag)
+ns_exportClass       <- function(tag, block, env) export_class(tag$val)
+ns_exportMethod      <- function(tag, block, env) export_s4_method(tag$val)
+ns_exportPattern     <- function(tag, block, env) one_per_line("exportPattern", tag$val)
+ns_import            <- function(tag, block, env) one_per_line("import", tag$val)
+ns_importFrom        <- function(tag, block, env) repeat_first("importFrom", tag$val)
+ns_importClassesFrom <- function(tag, block, env) repeat_first("importClassesFrom", tag$val)
+ns_importMethodsFrom <- function(tag, block, env) repeat_first("importMethodsFrom", tag$val)
 
 ns_exportS3Method    <- function(tag, block, env) {
   obj <- attr(block, "object")
 
-  if (length(tag) < 2 && !inherits(obj, "s3method")) {
+  if (length(tag$val) < 2 && !inherits(obj, "s3method")) {
     block_warning(block,
       "`@exportS3Method` and `@exportS3Method generic` must be used with an S3 method"
     )
     return()
   }
 
-  if (identical(tag, "")) {
+  if (identical(tag$val, "")) {
     method <- attr(obj$value, "s3method")
-  } else if (length(tag) == 1) {
-    method <- c(tag, attr(obj$value, "s3method")[[2]])
+  } else if (length(tag$val) == 1) {
+    method <- c(tag$val, attr(obj$value, "s3method")[[2]])
   } else {
-    method <- tag
+    method <- tag$val
   }
 
   export_s3_method(method)
 }
 
 ns_useDynLib         <- function(tag, block, env) {
-  if (length(tag) == 1) {
-    return(paste0("useDynLib(", auto_quote(tag), ")"))
+  if (length(tag$val) == 1) {
+    return(paste0("useDynLib(", auto_quote(tag$val), ")"))
   }
 
-  if (any(grepl(",", tag))) {
+  if (any(grepl(",", tag$val))) {
     # If there's a comma in list, don't quote output. This makes it possible
     # for roxygen2 to support other NAMESPACE forms not otherwise mapped
-    args <- paste0(tag, collapse = " ")
+    args <- paste0(tag$val, collapse = " ")
     paste0("useDynLib(", args, ")")
   } else {
-    repeat_first("useDynLib", tag)
+    repeat_first("useDynLib", tag$val)
   }
 }
-ns_rawNamespace  <- function(tag, block, env) tag
+ns_rawNamespace  <- function(tag, block, env) tag$val
 ns_evalNamespace <- function(tag, block, env) {
   roxy_tag_eval(tag, env)
 }
@@ -215,7 +215,7 @@ default_export.rcclass   <- function(x, block) export_class(x$value@className)
 #' @export
 default_export.default   <- function(x, block) export(x$alias)
 #' @export
-default_export.NULL      <- function(x, block) export(block$name)
+default_export.NULL      <- function(x, block) export(block_get_tag_value(block, "name"))
 
 
 # Helpers -----------------------------------------------------------------

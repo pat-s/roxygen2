@@ -59,14 +59,14 @@ roxy_tag_eval <- function(tag, env) {
     out <- eval(expr, envir = env)
 
     if (!is.character(out)) {
-      roxy_tag_warning(tag, " did not evaluate to a string")
+      roxy_tag_warning(tag, "did not evaluate to a string")
     } else if (anyNA(out)) {
-      roxy_tag_warning(tag, " result contained NA")
+      roxy_tag_warning(tag, "result contained NA")
     } else {
       out
     }
   }, error = function(e) {
-    roxy_tag_warning(tag, " failed with error:\n", e$message)
+    roxy_tag_warning(tag, "failed with error:\n", e$message)
   })
 }
 
