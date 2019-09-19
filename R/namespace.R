@@ -154,7 +154,7 @@ ns_exportS3Method    <- function(tag, block, env) {
   obj <- block$object
 
   if (length(tag$val) < 2 && !inherits(obj, "s3method")) {
-    block_warning(block,
+    roxy_tag_warning(tag,
       "`@exportS3Method` and `@exportS3Method generic` must be used with an S3 method"
     )
     return()

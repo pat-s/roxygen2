@@ -128,7 +128,7 @@ block_to_rd <- function(block, base_path, env, global_options = list()) {
 
   name <- block_get_tag(block, "name")$val %||% block$object$topic
   if (is.null(name)) {
-    block_warning(block, "Missing name")
+    roxy_tag_warning(block$tags[[1]], "Missing name")
     return()
   }
 
@@ -160,7 +160,7 @@ block_to_rd <- function(block, base_path, env, global_options = list()) {
   topic_add_value(rd, block)
 
   if (rd$has_field("description") && rd$has_field("reexport")) {
-    block_warning(block, "Can't use description when re-exporting")
+    roxy_tag_warning(block$tags[[1]], "Can't use description when re-exporting")
     return()
   }
 
@@ -402,10 +402,10 @@ topic_add_sections <- function(topic, block) {
 
     title <- str_split(pieces[1], "\n")[[1]]
     if (length(title) > 1) {
-      return(block_warning(
-        block,
+      roxy_tag_warning(tag,
         "Section title spans multiple lines: \n", "@section ", title[1]
-      ))
+      )
+      return()
     }
 
     topic$add_field(roxy_field_section(pieces[1], pieces[2]))

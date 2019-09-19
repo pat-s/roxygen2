@@ -164,15 +164,6 @@ block_location <- function(block) {
   }
 }
 
-block_warning <- function(block, ...) {
-  warning(
-    block_location(block), ": ", ...,
-    call. = FALSE,
-    immediate. = TRUE
-  )
-  NULL
-}
-
 # block accessors ---------------------------------------------------------
 
 block_tags <- function(block) {
