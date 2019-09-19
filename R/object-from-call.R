@@ -55,7 +55,7 @@ object_from_name <- function(name, env, block) {
     type <- "s4generic"
   } else if (is.function(value)) {
     # Potential S3 methods/generics need metadata added
-    method <- unlist(block$method, use.names = FALSE)
+    method <- block_get_tag_value(block, "method")
     value <- add_s3_metadata(value, name, env, method)
     if (inherits(value, "s3generic")) {
       type <- "s3generic"
@@ -166,7 +166,7 @@ parser_setMethodS3 <- function(call, env, block) {
   class <- as.character(call[[3]])
   name <- paste(method, class, sep = ".")
 
-  method <- unlist(block$method, use.names = FALSE)
+  method <- block_get_tag_value(block, "method")
   value <- add_s3_metadata(get(name, env), name, env, method)
 
   object(value, name, "s3method")

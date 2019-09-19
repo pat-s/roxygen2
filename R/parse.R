@@ -116,14 +116,11 @@ env_package <- function(path) {
 
 order_blocks <- function(blocks) {
   block_order <- function(x) {
-    if (!"order" %in% names(x)) {
-      Inf
-    } else {
-      ord <- x[names(x) == "order"]
-      if (length(ord) > 1) {
-        ord <- ord[[length(ord)]]
-      }
+    if (block_has_tags(x, "order")) {
+      ord <- block_get_tag_value(x, "order")
       as.double(ord)
+    } else {
+      Inf
     }
   }
 
