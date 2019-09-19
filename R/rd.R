@@ -221,10 +221,9 @@ needs_doc <- function(block) {
 # Tag processing functions ------------------------------------------------
 
 topic_add_backref <- function(topic, block) {
-  backrefs <- block_get_tags(block, "backref") %||% attr(block, "filename")
-
-  for (backref in backrefs) {
-    topic$add_simple_field("backref", backref)
+  tags <- block_get_tags(block, "backref")
+  for (tag in tags) {
+    topic$add_simple_field("backref", tag$val)
   }
 }
 

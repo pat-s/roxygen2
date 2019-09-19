@@ -116,6 +116,8 @@ block_find_object <- function(block, env) {
 
   # Add in defaults generated from the object
   defaults <- object_defaults(object)
+  defaults <- c(defaults, list(roxy_tag("backref", attr(block, "filename"))))
+
   defaults <- defaults[!block_tags(defaults) %in% block_tags(block)]
 
   roxy_block_copy(block, c(block, defaults))
