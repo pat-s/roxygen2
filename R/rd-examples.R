@@ -15,13 +15,13 @@ read_example_from_path <- function(tag, base_path) {
   path <- str_trim(tag$val)
   nl <- str_count(path, "\n")
   if (any(nl) > 0) {
-    roxy_tag_warning(tag, "@example spans multiple lines. Do you want @examples?")
+    roxy_tag_warning(tag, "spans multiple lines. Do you want @examples?")
     return()
   }
 
   path <- file.path(base_path, path)
   if (!file.exists(path)) {
-    roxy_tag_warning(tag, "@example ", path, " doesn't exist")
+    roxy_tag_warning(tag, "'", path, "' doesn't exist")
     return()
   }
 

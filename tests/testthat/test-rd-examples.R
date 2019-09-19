@@ -55,14 +55,14 @@ test_that("@example does not introduce extra empty lines", {
 
 test_that("@example gives warning if used instead of @examples", {
   expect_warning(
-    out <- roc_proc_text(rd_roclet(), "
+    roc_proc_text(rd_roclet(), "
       #' @name a
       #' @title a
       #' @example
       #' a <- 1
       #' a + b
-      NULL")[[1]],
-    "@example spans multiple lines"
+      NULL"),
+    "spans multiple lines"
   )
 
   expect_null(get_tag(out, "examples")$values, NULL)
