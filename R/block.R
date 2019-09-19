@@ -65,7 +65,7 @@ print.roxy_block <- function(x, ...) {
   }
   obj <- format(x$object)
 
-  cat_line("<roxy_block> [", block_location(x), "]")
+  cat_line("<roxy_block> [", basename(x$file), ":", x$line, "]")
   cat_line("  $tag")
   cat_line("    ", map_chr(x$tags, format, file = x$file))
   cat_line("  $call   ", call)
@@ -154,14 +154,6 @@ block_find_object <- function(block, env) {
 
   block$tags <- c(block$tags, defaults)
   block
-}
-
-block_location <- function(block) {
-  if (is.null(block)) {
-    NULL
-  } else {
-    paste0(basename(block$file), ":", block$line)
-  }
 }
 
 # block accessors ---------------------------------------------------------
