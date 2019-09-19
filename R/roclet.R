@@ -120,9 +120,15 @@ is.roclet <- function(x) inherits(x, "roclet")
 #' @param global_options List of global options
 #' @export
 #' @keywords internal
-roc_proc_text <- function(roclet, input, registry = default_tags(),
+roc_proc_text <- function(roclet,
+                          input,
+                          registry = NULL,
                           global_options = list()) {
   stopifnot(is.roclet(roclet))
+
+  if (is.null(registry)) {
+    registry <- c(default_tags(), roclet_tags(roclet))
+  }
 
   file <- tempfile()
   write_lines(input, file)
