@@ -1,11 +1,11 @@
 #' @export
 object_defaults.import <- function(x) {
   list(
-    docType = "import",
-    name = "reexports",
-    keywords = "internal",
-    title = "Objects exported from other packages",
-    .reexport = roxy_field_reexport(x$value$pkg, x$value$fun)
+    roxy_tag("docType", "import"),
+    roxy_tag("name", "reexports"),
+    roxy_tag("keywords", "internal"),
+    roxy_tag("title", "Objects exported from other packages"),
+    roxy_tag(".reexport", roxy_field_reexport(x$value$pkg, x$value$fun))
   )
 }
 

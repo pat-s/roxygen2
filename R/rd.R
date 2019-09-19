@@ -138,8 +138,10 @@ block_to_rd <- function(block, base_path, env, global_options = list()) {
   topic_add_name_aliases(rd, block, name)
 
   # Some fields added directly by roxygen internals
-  fields <- Filter(is_roxy_field, block)
-  rd$add(fields)
+  tags <- Filter(roxy_tag_is_field, block)
+  for (tag in tags) {
+    rd$add(tag$val)
+  }
 
   topic_add_backref(rd, block)
   topic_add_doc_type(rd, block)

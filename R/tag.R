@@ -30,6 +30,8 @@ roxy_tag <- function(tag, val, file = "", line = 0) {
 
 is.roxy_tag <- function(x) inherits(x, "roxy_tag")
 
+roxy_tag_is_field <- function(tag) inherits(tag$val, "roxy_field")
+
 #' @export
 print.roxy_tag <- function(x, ...) {
   cat("[", x$file, ":", x$line, "] @", x$tag, " ", encodeString(x$val), "\n",
