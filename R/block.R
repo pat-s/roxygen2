@@ -11,7 +11,8 @@
 #' * `block_get_tag_value(block, tag)`: gets `val` field from single tag.
 #'
 #' @param tags A list of [roxy_tag]s.
-#' @param file,line Location of first line of block
+#' @param file,line Location of the `call` (i.e. the line after the last
+#'   line of the block).
 #' @param call Expression associated with block.
 #' @param object Optionally, the object associated with the block, found
 #'   by inspecting/evaluating `call`.
@@ -19,6 +20,20 @@
 #' @param tag,tags Either a single tag name, or a character vector of tag names.
 #' @export
 #' @keywords internal
+#' @examples
+#' # The easiest way to see the structure of a roxy_block is to create one
+#' # using parse_text:
+#' text <- "
+#'   #' This is a title
+#'   #'
+#'   #' @param x,y A number
+#'   #' @export
+#'   f <- function(x, y) x + y
+#' "
+#'
+#' # parse_text() returns a list of blocks, so I extract the first
+#' block <- parse_text(text)[[1]]
+#' block
 roxy_block <- function(tags,
                        file,
                        line,
@@ -48,11 +63,14 @@ print.roxy_block <- function(x, ...) {
   if (length(call) == 2) {
     call <- paste0(call[[1]], " ...")
   }
+  obj <- format(x$object)
 
-  cat_line("<roxy_block> @ ", block_location(x))
-  cat_line("  Tags: ", paste0(names(x$tags), collapse = ", "))
-  cat_line("  Call: ", call)
-  cat_line("  Obj ? ", !is.null(x$object))
+  cat_line("<roxy_block> [", block_location(x), "]")
+  cat_line("  $tag")
+  cat_line("    ", map_chr(x$tags, format, file = x$file))
+  cat_line("  $call   ", call)
+  cat_line("  $object ", obj[[1]])
+  cat_line("  ", obj[-1])
 }
 
 block_create <- function(tokens, call, srcref,
@@ -129,7 +147,7 @@ block_find_object <- function(block, env) {
 
   # Add in defaults generated from the object
   defaults <- object_defaults(object)
-  defaults <- c(defaults, list(roxy_tag("backref", block$file)))
+  defaults <- c(defaults, list(roxy_tag("backref", block$file, block$file)))
 
   default_tags <- map_chr(defaults, "tag")
   defaults <- defaults[!default_tags %in% block_tags(block)]

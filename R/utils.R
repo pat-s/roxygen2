@@ -135,7 +135,7 @@ collapse <- function(key, value, fun, ...) {
 }
 
 cat_line <- function(...) {
-  cat(..., "\n", sep = "")
+  cat(paste0(..., "\n", collapse = ""))
 }
 
 tag_aliases <- function(f) {

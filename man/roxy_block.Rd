@@ -21,7 +21,8 @@ block_get_tag_value(block, tag)
 \arguments{
 \item{tags}{A list of \link{roxy_tag}s.}
 
-\item{file, line}{Location of first line of block}
+\item{file, line}{Location of the \code{call} (i.e. the line after the last
+line of the block).}
 
 \item{call}{Expression associated with block.}
 
@@ -43,5 +44,20 @@ The \verb{block_*} functions provide a few helpers for common operations:
 throws warning if more than 1.
 \item \code{block_get_tag_value(block, tag)}: gets \code{val} field from single tag.
 }
+}
+\examples{
+# The easiest way to see the structure of a roxy_block is to create one
+# using parse_text:
+text <- "
+  #' This is a title
+  #'
+  #' @param x,y A number
+  #' @export
+  f <- function(x, y) x + y
+"
+
+# parse_text() returns a list of blocks, so I extract the first
+block <- parse_text(text)[[1]]
+block
 }
 \keyword{internal}

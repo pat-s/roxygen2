@@ -17,7 +17,7 @@
 \alias{tag_markdown_with_sections}
 \title{Tags}
 \usage{
-roxy_tag(tag, val, file = "", line = 0)
+roxy_tag(tag, val, file = NA, line = NA)
 
 roxy_tag_warning(x, ...)
 

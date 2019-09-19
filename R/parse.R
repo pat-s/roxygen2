@@ -56,11 +56,13 @@ parse_package <- function(path = ".",
 parse_file <- function(file,
                        env = env_file(file),
                        registry = default_tags(),
-                       global_options = list()) {
+                       global_options = list(),
+                       srcref_path = NULL) {
 
   blocks <- tokenize_file(file,
     registry = registry,
-    global_options = global_options
+    global_options = global_options,
+    srcref_path = srcref_path
   )
 
   if (!is.null(env)) {
@@ -90,7 +92,8 @@ parse_text <- function(text,
     file,
     env = env,
     registry = registry,
-    global_options = global_options
+    global_options = global_options,
+    srcref_path = "<text>"
   )
   blocks <- order_blocks(blocks)
   blocks

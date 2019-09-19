@@ -249,11 +249,17 @@ object <- function(value, alias, type) {
 }
 
 #' @export
-print.object <- function(x, ...) {
-  cat("<", class(x)[1], "> ", x$name,
-    if (!is.null(x$alias)) paste0(" (", x$alias, ")"), "\n",
-    sep = ""
+format.object <- function(x, ...) {
+  c(
+    paste0("<", class(x)[1], "> ", x$name),
+    paste0("  $topic ", x$topic),
+    if (!is.null(x$alias)) paste0("  $alias ", x$alias)
   )
+}
+
+#' @export
+print.object <- function(x, ...) {
+  cat_line(format(x, ...))
 }
 
 object_topic <- function(value, alias, type) {

@@ -16,7 +16,7 @@
 #'   but after parsing can be a more complicated structure (typically
 #'   a character vector, but sometimes a list).
 #' @param file,line Location of the tag
-roxy_tag <- function(tag, val, file = "", line = 0) {
+roxy_tag <- function(tag, val, file = NA, line = NA) {
   structure(
     list(
       file = file,
@@ -33,9 +33,21 @@ is.roxy_tag <- function(x) inherits(x, "roxy_tag")
 roxy_tag_is_field <- function(tag) inherits(tag$val, "roxy_field")
 
 #' @export
+format.roxy_tag <- function(x, ..., file = NULL) {
+  loc <- paste0(
+    "[",
+    if (identical(x$file, file)) "line" else basename(x$file),
+    ":",
+    if (is.na(x$line)) "???" else format(x$line, width = 3),
+    "]"
+  )
+
+  paste0(loc, " @", x$tag)
+}
+
+#' @export
 print.roxy_tag <- function(x, ...) {
-  cat("[", x$file, ":", x$line, "] @", x$tag, " ", encodeString(x$val), "\n",
-    sep = "")
+  cat_lines(format(x, ...))
 }
 
 make_tag_message <- function(x, message) {
