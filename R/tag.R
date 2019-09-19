@@ -50,20 +50,17 @@ print.roxy_tag <- function(x, ...) {
   cat_lines(format(x, ...))
 }
 
-make_tag_message <- function(x, message) {
-  paste0(
-    "@",
-    x$tag,
-    if (x$file != "") paste0(" [", x$file, "#", x$line, "]"),
-    ": ",
-    message
-  )
-}
-
 #' @export
 #' @rdname roxy_tag
 roxy_tag_warning <- function(x, ...) {
-  warning(make_tag_message(x, paste0(...)), call. = FALSE, immediate. = TRUE)
+  message <- paste0(
+    if (!is.na(x$file)) paste0("[", x$file, ":", x$line, "] "),
+    "@", x$tag,
+    ...,
+    collapse = " "
+  )
+
+  warning(message, call. = FALSE, immediate. = TRUE)
   NULL
 }
 
