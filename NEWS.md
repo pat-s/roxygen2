@@ -1,5 +1,8 @@
 # roxygen2 (development version)
 
+* You now get a warning if you use multiple `@usage` statements. Previously,
+  the first was used without a warning
+
 * Functions documented in `reexports` are now sorted alphabetically by
   package (#765).
 
