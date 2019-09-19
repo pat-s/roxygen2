@@ -122,7 +122,7 @@ roclet_process.roclet_param <- function(x, blocks, env, base_path, global_option
   warns <- list()
   
   for (block in blocks) {
-    block_obj <- attr(block, "object")
+    block_obj <- block$object
     
     if (!is(block_obj, "function")) {
       next

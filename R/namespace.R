@@ -136,7 +136,7 @@ block_to_ns <- function(block, env, tag_set = ns_tags) {
 ns_export <- function(tag, block, env) {
   if (identical(tag$val, "")) {
     # FIXME: check for empty exports (i.e. no name)
-    default_export(attr(block, "object"), block)
+    default_export(block$object, block)
   } else {
     export(tag$val)
   }
@@ -151,7 +151,7 @@ ns_importClassesFrom <- function(tag, block, env) repeat_first("importClassesFro
 ns_importMethodsFrom <- function(tag, block, env) repeat_first("importMethodsFrom", tag$val)
 
 ns_exportS3Method    <- function(tag, block, env) {
-  obj <- attr(block, "object")
+  obj <- block$object
 
   if (length(tag$val) < 2 && !inherits(obj, "s3method")) {
     block_warning(block,

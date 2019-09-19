@@ -126,7 +126,7 @@ block_to_rd <- function(block, base_path, env, global_options = list()) {
     return()
   }
 
-  name <- block_get_tag(block, "name")$val %||% attr(block, "object")$topic
+  name <- block_get_tag(block, "name")$val %||% block$object$topic
   if (is.null(name)) {
     block_warning(block, "Missing name")
     return()
@@ -138,7 +138,7 @@ block_to_rd <- function(block, base_path, env, global_options = list()) {
   topic_add_name_aliases(rd, block, name)
 
   # Some fields added directly by roxygen internals
-  tags <- Filter(roxy_tag_is_field, block)
+  tags <- Filter(roxy_tag_is_field, block$tags)
   for (tag in tags) {
     rd$add(tag$val)
   }
@@ -249,7 +249,7 @@ topic_add_simple_tags <- function(topic, block) {
 
 topic_add_params <- function(topic, block) {
   # Used in process_inherit_params()
-  value <- attr(block, "object")$value
+  value <- block$object$value
   if (is.function(value)) {
     formals <- formals(value)
     topic$add_simple_field("formals", names(formals))
@@ -272,7 +272,7 @@ topic_add_name_aliases <- function(topic, block, name) {
     # Don't add default aliases
     aliases <- setdiff(aliases, "NULL")
   } else {
-    aliases <- c(name, attr(block, "object")$alias, aliases)
+    aliases <- c(name, block$object$alias, aliases)
   }
   aliases <- unique(aliases)
 
@@ -282,7 +282,7 @@ topic_add_name_aliases <- function(topic, block, name) {
 
 
 topic_add_methods <- function(topic, block) {
-  obj <- attr(block, "object")
+  obj <- block$object
   if (!inherits(obj, "rcclass")) return()
 
   methods <- obj$methods
@@ -349,7 +349,7 @@ topic_add_usage <- function(topic, block, old_usage = FALSE) {
   tag <- block_get_tag(block, "usage")
 
   if (is.null(tag)) {
-    usage <- object_usage(attr(block, "object"), old_usage = old_usage)
+    usage <- object_usage(block$object, old_usage = old_usage)
   } else if (tag$val == "NULL") {
     usage <- NULL
   } else {

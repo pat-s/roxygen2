@@ -4,7 +4,7 @@ topic_add_describe_in <- function(topic, block, env) {
     return()
   }
 
-  if (is.null(attr(block, "object"))) {
+  if (is.null(block$object)) {
     roxy_tag_warning(tag, "@describeIn must be used with an object")
     return()
   }
@@ -18,7 +18,7 @@ topic_add_describe_in <- function(topic, block, env) {
   }
 
   dest <- find_object(tag$val$name, env)
-  label <- build_label(attr(block, "object"), dest, block)
+  label <- build_label(block$object, dest, block)
   if (is.null(label))
     return()
 
