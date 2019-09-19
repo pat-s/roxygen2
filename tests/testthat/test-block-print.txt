@@ -1,0 +1,12 @@
+> block
+<roxy_block> [<text>:6]
+  $tag
+    [line:  1] @title
+    [line:  5] @param
+    [line:  6] @export
+    [line:???] @backref
+  $call   f <- function(x, y) x + y
+  $object <function> 
+    $topic f
+    $alias f
+

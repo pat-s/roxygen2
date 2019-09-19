@@ -1,3 +1,18 @@
+
+# object ------------------------------------------------------------------
+
+test_that("has thoughtful print method", {
+  text <- "
+    #' This is a title
+    #'
+    #' @param x,y A number
+    #' @export
+    f <- function(x, y) x + y
+  "
+  block <- parse_text(text)[[1]]
+  verify_output(test_path("test-block-print.txt"), block)
+})
+
 # description block -------------------------------------------------------
 
 test_that("title and description taken from first line if only one", {
