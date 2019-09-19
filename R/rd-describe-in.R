@@ -8,16 +8,16 @@ topic_add_describe_in <- function(topic, block, env) {
     roxy_tag_warning(tag, "@describeIn must be used with an object")
     return()
   }
-  if (block_has_tag(block,  "name")) {
+  if (block_has_tags(block,  "name")) {
     roxy_tag_warning(tag, "@describeIn can not be used with @name")
     return()
   }
-  if (block_has_tag(block, "rdname")) {
+  if (block_has_tags(block, "rdname")) {
     roxy_tag_warning(tag, "@describeIn can not be used with @rdname")
     return()
   }
 
-  dest <- find_object(tag$val$describeIn$name, env)
+  dest <- find_object(tag$val$name, env)
   label <- build_label(attr(block, "object"), dest, block)
   if (is.null(label))
     return()
