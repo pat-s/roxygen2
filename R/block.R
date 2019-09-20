@@ -242,7 +242,7 @@ parse_description <- function(tags) {
   }
 
   intro <- tags[[1]]
-  intro$val <- str_trim(intro$val)
+  intro$val <- str_trim(intro$raw)
   if (intro$val == "") {
     return(tags[-1])
   }
@@ -256,17 +256,17 @@ parse_description <- function(tags) {
   if ("title" %in% tag_names) {
     title <- NULL
   } else if (length(paragraphs) > 0) {
-    title <- roxy_tag("title", paragraphs[1], intro$file, intro$line)
+    title <- roxy_tag("title", paragraphs[1], NULL, intro$file, intro$line)
     paragraphs <- paragraphs[-1]
   } else {
-    title <- roxy_tag("title", "", intro$file, intro$line)
+    title <- roxy_tag("title", "", NULL, intro$file, intro$line)
   }
 
   # 2nd paragraph = description (unless has @description)
   if ("description" %in% tag_names || length(paragraphs) == 0) {
     description <- NULL
   } else if (length(paragraphs) > 0) {
-    description <- roxy_tag("description", paragraphs[1], intro$file, intro$line)
+    description <- roxy_tag("description", paragraphs[1], NULL, intro$file, intro$line)
     paragraphs <- paragraphs[-1]
   }
 
@@ -277,12 +277,12 @@ parse_description <- function(tags) {
     # Find explicit @details tags
     didx <- which(tag_names == "details")
     if (length(didx) > 0) {
-      explicit_details <- map_chr(tags[didx], "val")
+      explicit_details <- map_chr(tags[didx], "raw")
       tags <- tags[-didx]
       details_para <- paste(c(details_para, explicit_details), collapse = "\n\n")
     }
 
-    details <- roxy_tag("details", details_para, intro$file, intro$line)
+    details <- roxy_tag("details", details_para, NULL, intro$file, intro$line)
   } else {
     details <- NULL
   }

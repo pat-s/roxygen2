@@ -1,5 +1,9 @@
 # roxygen2 (development version)
 
+* The internal `roxy_tag()` gains a new field: `raw`. This now always contains
+  the raw string value parsed from the file. `val` is only set after the tag
+  has been parsed.
+
 * The internal data structure used to represent blocks has been overhauled.
   It is now documented and stable - see `roxy_block()` for details. If you're
   one of the few people who have written a roxygen2 extension, this will
