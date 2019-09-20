@@ -8,7 +8,7 @@
 #' @param tag Tag name
 #' @param raw Raw tag value, a string.
 #' @param val Parsed tag value, typically a character vector, but sometimes
-#'   a list.
+#'   a list. Usually filled in by `tag_parsers`
 #' @param file,line Location of the tag
 roxy_tag <- function(tag, raw, val = NULL, file = NA_character_, line = NA_integer_) {
   structure(

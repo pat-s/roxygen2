@@ -15,7 +15,7 @@ roxy_tag_warning(x, ...)
 \item{raw}{Raw tag value, a string.}
 
 \item{val}{Parsed tag value, typically a character vector, but sometimes
-a list.}
+a list. Usually filled in by \code{tag_parsers}}
 
 \item{file, line}{Location of the tag}
 }

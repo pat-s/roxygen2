@@ -5,11 +5,14 @@
 #' returning `NULL`. Two exceptions to the rule are `tag_words()` and
 #' `tag_two_part()`, which are tag parsing generator functions.
 #'
-#' @name parse_tag
+#' @param x A [roxy_tag] object to parss
+#' @return A [roxy_tag] object with the `val` field set to the parsed value.
+#' @name tag_parsers
+#' @keywords internal
 NULL
 
 #' @export
-#' @rdname parse_tag
+#' @rdname tag_parsers
 tag_value <- function(x) {
   if (x$raw == "") {
     roxy_tag_warning(x, "requires a value")
@@ -22,7 +25,7 @@ tag_value <- function(x) {
 }
 
 #' @export
-#' @rdname parse_tag
+#' @rdname tag_parsers
 tag_inherit <- function(x) {
   if (x$raw == "") {
     roxy_tag_warning(x, "requires a value")
@@ -56,7 +59,7 @@ tag_inherit <- function(x) {
 }
 
 #' @export
-#' @rdname parse_tag
+#' @rdname tag_parsers
 tag_name <- function(x) {
   if (x$raw == "") {
     roxy_tag_warning("requires a name")
@@ -71,7 +74,7 @@ tag_name <- function(x) {
 }
 
 #' @export
-#' @rdname parse_tag
+#' @rdname tag_parsers
 #' @param first,second Name of first and second parts of two part tags
 #' @param required Is the second part required (TRUE) or can it be blank
 #'   (FALSE)?
@@ -105,11 +108,11 @@ tag_two_part <- function(first, second, required = TRUE, markdown = TRUE) {
 }
 
 #' @export
-#' @rdname parse_tag
+#' @rdname tag_parsers
 tag_name_description <- tag_two_part("name", "description")
 
 #' @export
-#' @rdname parse_tag
+#' @rdname tag_parsers
 #' @param min,max Minimum and maximum number of words
 tag_words <- function(min = 0, max = Inf) {
   function(x) {
@@ -130,7 +133,7 @@ tag_words <- function(min = 0, max = Inf) {
 }
 
 #' @export
-#' @rdname parse_tag
+#' @rdname tag_parsers
 tag_words_line <- function(x) {
   x$val <- str_trim(x$raw)
 
@@ -145,7 +148,7 @@ tag_words_line <- function(x) {
 }
 
 #' @export
-#' @rdname parse_tag
+#' @rdname tag_parsers
 tag_toggle <- function(x) {
   x$val <- str_trim(x$raw)
 
@@ -157,7 +160,7 @@ tag_toggle <- function(x) {
 }
 
 #' @export
-#' @rdname parse_tag
+#' @rdname tag_parsers
 tag_code <- function(x) {
   if (x$raw == "") {
     roxy_tag_warning(x, "requires a value")
@@ -175,7 +178,7 @@ tag_code <- function(x) {
 
 # Examples need special parsing because escaping rules are different
 #' @export
-#' @rdname parse_tag
+#' @rdname tag_parsers
 tag_examples <- function(x) {
   if (x$raw == "") {
     return(roxy_tag_warning(x, "requires a value"))
@@ -190,14 +193,14 @@ tag_examples <- function(x) {
 }
 
 #' @export
-#' @rdname parse_tag
+#' @rdname tag_parsers
 tag_markdown <- function(x) {
   x$val <- markdown_if_active(x$raw, x)
   x
 }
 
 #' @export
-#' @rdname parse_tag
+#' @rdname tag_parsers
 tag_markdown_with_sections <- function(x) {
   if (x$raw == "") {
     return(roxy_tag_warning(x, "requires a value"))
